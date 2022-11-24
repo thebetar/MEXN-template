@@ -15,6 +15,9 @@ For using this template knowledge is needed on how to use:
 -   NGINX
 -   MongoDB
 
+To download
+`git clone https://github.com/thebetar/MEXN-template.git`
+
 ### Instructions
 
 For the `client` and `server` respectively there are readme's inside the directory. Read those for the setup concerning those parts.
