@@ -1,0 +1,33 @@
+services:
+    database:
+        container_name: project-name-db-container
+        image: mongo
+        volumes:
+            - ./db/data:/data/db
+        networks:
+            - backend-network
+    server:
+        container_name: project-name-server-container
+        build: ./server
+        depends_on:
+            - database
+        networks:
+            - backend-network
+            - frontend-network
+        environment:
+            - MONGO_URL=mongodb://project-name-db-container:27017
+            - MONGO_DATABASE=database-name
+            - CORS_URL=http://project-name-client-container:80
+            - JWT_SECRET=random-secret
+    client:
+        container_name: project-name-client-container
+        build: ./client
+        ports:
+            - '80:80'
+        depends_on:
+            - server
+        networks:
+            - project-name-frontend-network
+networks:
+    project-name-backend-network:
+    project-name-frontend-network:

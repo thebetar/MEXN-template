@@ -1,0 +1,21 @@
+name: Deploy master to server
+run-name: ${{ github.actor }} is deploying master to server
+on:
+    push:
+        branches:
+            - main
+jobs:
+    Deploy:
+        runs-on: ubuntu-latest
+        steps:
+            - name: Pull and run on remote
+              uses: appleboy/ssh-action@master
+              with:
+                  host: ${{ secrets.HOST }}
+                  username: ${{ secrets.USERNAME }}
+                  password: ${{ secrets.PASSWORD }}
+                  script: |
+                      cd ~/ProjectName
+                      npm run ci:install
+                      echo ${{ secrets.PASSWORD}} | sudo -S docker compose build --no-cache
+                      echo ${{ secrets.PASSWORD}} | sudo -S docker compose up -d

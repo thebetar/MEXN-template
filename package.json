@@ -1,0 +1,12 @@
+{
+	"name": "mexn-template",
+	"version": "1.0.0",
+	"description": "",
+	"main": "index.js",
+	"scripts": {
+		"ci:install": "cd client && npm ci && cd ../server && npm ci"
+	},
+	"keywords": [],
+	"author": "",
+	"license": "ISC"
+}
