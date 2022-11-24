@@ -28,6 +28,8 @@ services:
             - server
         networks:
             - project-name-frontend-network
+        environment:
+            - SERVER_URL=/api
 networks:
     project-name-backend-network:
     project-name-frontend-network:

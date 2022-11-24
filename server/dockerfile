@@ -1,0 +1,16 @@
+FROM node:alpine
+
+WORKDIR /app
+
+COPY . .
+
+# If setup with Typescript uncomment
+# COPY tsconfig.json .
+
+RUN npm ci
+RUN npm run build
+
+# If using another PORT change this
+EXPOSE 3000
+
+CMD [ "node", "dist/index" ]

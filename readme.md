@@ -7,6 +7,14 @@ This all bootstrapped together with docker compose to run it within containers.
 
 And finally a template for using github actions to deploy
 
+For using this template knowledge is needed on how to use:
+
+-   Docker
+-   NodeJS
+-   NPM
+-   NGINX
+-   MongoDB
+
 ### Instructions
 
 For the `client` and `server` respectively there are readme's inside the directory. Read those for the setup concerning those parts.
