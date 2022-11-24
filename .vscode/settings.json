@@ -1,0 +1,8 @@
+{
+	"editor.formatOnSave": true,
+	"editor.wordWrap": "wordWrapColumn",
+	"editor.wordWrapColumn": 160,
+	"editor.codeActionsOnSave": {
+		"source.organizeImports": false
+	}
+}
