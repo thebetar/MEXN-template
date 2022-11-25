@@ -1,5 +1,7 @@
 FROM node:alpine as builder
 
+ENV NODE_ENV=production
+
 WORKDIR /app
 
 COPY package*.json .
@@ -8,7 +10,7 @@ RUN npm ci
 
 COPY . .
 
-RUN npm run build --production
+RUN npm run build
 
 # Path: client/dockerfile
 FROM nginx:alpine
