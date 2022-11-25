@@ -1,16 +1,22 @@
+FROM node:alpine as builder
+
+WORKDIR /app
+
+COPY package*.json .
+
+RUN npm ci
+
+COPY . .
+
+RUN npm run build
+
 FROM node:alpine
 
 WORKDIR /app
 
-COPY . .
-
-# If setup with Typescript uncomment
-# COPY tsconfig.json .
-
-RUN npm ci
-RUN npm run build
+COPY --from=builder /app/dist /app 
 
 # If using another PORT change this
 EXPOSE 3000
 
-CMD [ "node", "dist/index" ]
+CMD [ "node", "index" ]
