@@ -10,6 +10,6 @@ Within the `.env` file within the `server` folder add the `http://localhost:xxxx
 
 ### Documentation:
 
-Express: https://expressjs.com/
+-   Express: https://expressjs.com/
 
-NestJS: https://docs.nestjs.com/
+-   NestJS: https://docs.nestjs.com/
