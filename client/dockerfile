@@ -12,7 +12,6 @@ COPY . .
 
 RUN npm run build
 
-# Path: client/dockerfile
 FROM nginx:alpine
 
 # Some frameworks use dist other use build if you are using a framework that uses build change this
