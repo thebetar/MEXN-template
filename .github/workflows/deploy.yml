@@ -2,8 +2,8 @@ name: Deploy master to server
 run-name: ${{ github.actor }} is deploying master to server
 on:
   push:
-    :
-      main
+    branches:
+      - main
 jobs:
   Deploy:
     runs-on: ubuntu-latest
