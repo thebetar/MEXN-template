@@ -20,8 +20,8 @@ To download
 
 ### Instructions
 
-For the `client` and `server` respectively there are readme's inside the directory. Read those for the setup concerning those parts.
-(to run in development there is also a small readme in the `db` folder)
+For the `client` and `server` respectively there are readme's inside the directory. Read those for the setup concerning those parts
+(to run in development there is also a small readme in the `db` folder).
 
 For docker compose some setting up has to be done as well. Change within the `docker-compose.yml` file the `project-name` string to your project name.
 Further more generate a random string for the JWT_SECRET (I prefer using the devtoys extension for VSCODE).
