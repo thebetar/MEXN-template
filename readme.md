@@ -5,7 +5,7 @@ This template contains a client (as Vuejs, React or Angular), a server (as Expre
 
 This all bootstrapped together with docker compose to run it within containers.
 
-And finally a template for using github actions to deploy
+And finally a template for using github actions to deploy.
 
 For using this template knowledge is needed on how to use:
 
