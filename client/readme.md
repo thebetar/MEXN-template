@@ -2,9 +2,9 @@
 
 Here goes your frontend application. Advised is to use `Vue`, `React` or `Angular`
 
--   Vue: `vue create .`
--   React: `create-react-app . --template typescript`
--   Angular: `ng new .`
+-   Vue: `vue create .` (https://cli.vuejs.org/guide/creating-a-project.html)
+-   React: `create-react-app . --template typescript` (https://reactjs.org/docs/create-a-new-react-app.html)
+-   Angular: `ng new .` (https://angular.io/tutorial/toh-pt0)
 
 For component frameworks I like to use `material design` for it's very complete components and not having to think about design myself for a more custom design I always use `Tailwind`
 
