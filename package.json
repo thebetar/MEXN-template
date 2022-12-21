@@ -6,7 +6,7 @@
 	"scripts": {
 		"init": "node init-cli.js",
 		"ci:install": "cd client && npm ci && cd ../server && npm ci",
-		"clean": "rm -rf client/* server/*"
+		"clean": "rm -rf client/* client/.* server/* server/.*"
 	},
 	"type": "module",
 	"keywords": [],
