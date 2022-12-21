@@ -22,11 +22,8 @@ async function createFrontend(frontend) {
 	function constructCommand(command) {
 		return `
 			cd client && 
-			${command} client &&
-			rm client/.gitignore &&
-			rm client/README.md &&
-			mv client/* . &&
-			rm -rf client
+			${command} . &&
+			cp ../config/client/* .
 		`;
 	}
 
@@ -34,7 +31,7 @@ async function createFrontend(frontend) {
 		case FRONTEND_FRAMEWORKS[0]:
 			console.log(`[MEXN] Creating React app...`);
 
-			executeCommand(constructCommand('npx create-react-app create-react-app'));
+			executeCommand(constructCommand('npx create-react-app'));
 
 			break;
 		case FRONTEND_FRAMEWORKS[1]:
@@ -53,11 +50,8 @@ async function createBackend(backend) {
 	function constructCommand(command) {
 		return `
 			cd server &&
-			${command} server &&
-			rm server/.gitignore &&
-			rm server/README.md &&
-			mv server/* . &&
-			rm -rf server
+			${command} . &&
+			cp ../config/server/* .
 		`;
 	}
 

@@ -15,8 +15,8 @@ services:
             - backend-network
             - frontend-network
         environment:
-            - MONGO_URL=mongodb://${PROJECT_NAME}-db-container:27017
-            - MONGO_DATABASE=${PROJECT_NAME}
+            - DATABASE_URL=mongodb://${PROJECT_NAME}-db-container:27017
+            - DATABASE_NAME=${PROJECT_NAME}
             - CORS_URL=http://${PROJECT_NAME}-client-container:80
             - JWT_SECRET=random-secret
     client:

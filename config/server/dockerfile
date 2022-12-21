@@ -1,7 +1,5 @@
 FROM node:alpine as builder
 
-ENV NODE_ENV=production
-
 WORKDIR /app
 
 COPY package*.json .
@@ -9,6 +7,7 @@ COPY package*.json .
 RUN npm ci
 
 COPY . .
+COPY tsconfig.json .
 
 RUN npm run build
 
@@ -16,9 +15,9 @@ FROM node:alpine
 
 WORKDIR /app
 
-COPY --from=builder /app/dist /app 
+COPY --from=builder /app/node_modules ./node_modules
+COPY --from=builder /app/dist .
 
-# If using another PORT change this
 EXPOSE 3000
 
 CMD [ "node", "index" ]

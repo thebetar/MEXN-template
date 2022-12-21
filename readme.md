@@ -20,13 +20,14 @@ To download
 
 ### Instructions
 
+To start this project run `npm run init`. This will present some questions about which `client`, `server` and `database` you choose.
+
 For the `client` and `server` respectively there are readme's inside the directory. Read those for the setup concerning those parts
 (to run in development there is also a small readme in the `db` folder).
 
-For docker compose some setting up has to be done as well. Change within the `docker-compose.yml` file the `project-name` string to your project name.
 Further more generate a random string for the JWT_SECRET (I prefer using the devtoys extension for VSCODE).
 
-Within the `./github/worksflows/deploy.yml` folder you see some secret and another `ProjectName`. Change this `ProjectName` to your project name and within your own github repository add the secrets (see https://github.com/Azure/actions-workflow-samples/blob/master/assets/create-secrets-for-GitHub-workflows.md for reference how to do this).
+Within your own github repository add the secrets referred to in the `.github/workflows/deploy.yml` (see https://github.com/Azure/actions-workflow-samples/blob/master/assets/create-secrets-for-GitHub-workflows.md for reference how to do this).
 
 #### Running in development
 
