@@ -21,6 +21,7 @@ function setProjectName(name) {
 async function createFrontend(frontend) {
 	function constructCommand(command) {
 		return `
+			mkdir -p client &&
 			cd client && 
 			${command} . &&
 			cp ../config/client/* .
@@ -49,6 +50,7 @@ async function createFrontend(frontend) {
 async function createBackend(backend) {
 	function constructCommand(command) {
 		return `
+			mkdir -p server &&
 			cd server &&
 			${command} . &&
 			cp ../config/server/* .
