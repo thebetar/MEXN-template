@@ -1,12 +1,17 @@
 {
-	"name": "mexn-template",
+	"name": "project-name",
 	"version": "1.0.0",
 	"description": "",
 	"main": "index.js",
 	"scripts": {
+		"init": "node init-cli.js",
 		"ci:install": "cd client && npm ci && cd ../server && npm ci"
 	},
+	"type": "module",
 	"keywords": [],
 	"author": "",
-	"license": "ISC"
+	"license": "ISC",
+	"dependencies": {
+		"inquirer": "^9.1.4"
+	}
 }
