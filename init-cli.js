@@ -4,9 +4,9 @@ import fs from 'fs';
 
 console.log("Welcome to the MEXN-template, let's get started! 🏃");
 
-const FRONTEND_FRAMEWORKS = ['React', 'Vue', 'Angular'];
+const FRONTEND_FRAMEWORKS = ['React', 'Vue']; // Angular soon to be added
 const BACKEND_FRAMEWORKS = ['Express', 'NestJS'];
-const DATABASES = ['MongoDB', 'PostgreSQL (not yet supported)'];
+const DATABASES = ['MongoDB']; // PostgreSQL soon to be added
 
 function executeCommand(command) {
 	execSync(command, { stdio: 'inherit' });
@@ -19,23 +19,28 @@ function setProjectName(name) {
 }
 
 async function createFrontend(frontend) {
+	function constructCommand(command) {
+		return `
+			cd client && 
+			${command} client &&
+			rm client/.gitignore &&
+			rm client/README.md &&
+			mv client/* . &&
+			rm -rf client
+		`;
+	}
+
 	switch (frontend) {
 		case FRONTEND_FRAMEWORKS[0]:
 			console.log(`[MEXN] Creating React app...`);
 
-			executeCommand('cd client && npx -p create-react-app create-react-app .');
+			executeCommand(constructCommand('npx create-react-app create-react-app'));
 
 			break;
 		case FRONTEND_FRAMEWORKS[1]:
 			console.log(`[MEXN] Creating Vue app...`);
 
-			executeCommand('cd client && npx -p @vue/cli vue create .');
-
-			break;
-		case FRONTEND_FRAMEWORKS[2]:
-			console.log(`[MEXN] Creating Angular app...`);
-
-			executeCommand('cd client && npx -p @angular/cli ng new .');
+			executeCommand(constructCommand('npx @vue/cli vue create'));
 
 			break;
 		default:
@@ -45,17 +50,28 @@ async function createFrontend(frontend) {
 }
 
 async function createBackend(backend) {
+	function constructCommand(command) {
+		return `
+			cd server &&
+			${command} server &&
+			rm server/.gitignore &&
+			rm server/README.md &&
+			mv server/* . &&
+			rm -rf server
+		`;
+	}
+
 	switch (backend) {
 		case BACKEND_FRAMEWORKS[0]:
 			console.log(`[MEXN] Creating Express app...`);
 
-			executeCommand('cd server && git clone https://github.com/thebetar/Express-template .');
+			executeCommand(constructCommand('git clone https://github.com/thebetar/Express-template'));
 
 			break;
 		case BACKEND_FRAMEWORKS[1]:
 			console.log(`[MEXN] Creating NestJS app...`);
 
-			executeCommand('cd server && npx -p @nestjs/cli nest new .');
+			executeCommand(constructCommand('npx -p @nestjs/cli nest new'));
 
 			break;
 		default:
@@ -67,10 +83,7 @@ async function createBackend(backend) {
 async function createDatabase(database) {
 	switch (database) {
 		case DATABASES[0]:
-			console.log(`[MEXN] Creating ${DATABASES[0]} app...`);
-			break;
-		case DATABASES[1]:
-			console.log(`[MEXN] Creating ${DATABASES[1]} app...`);
+			console.log(`[MEXN] Creating MongoDB database...`);
 			break;
 		default:
 			console.log('[MEXN] No database selected.');
