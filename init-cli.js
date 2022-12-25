@@ -4,9 +4,10 @@ import fs from 'fs';
 
 console.log("Welcome to the MEXN-template, let's get started! 🏃");
 
-const FRONTEND_FRAMEWORKS = ['React', 'Vue']; // Angular soon to be added
+const FRONTEND_FRAMEWORKS = ['React', 'Vue', 'Angular']; // Angular maybe later
 const BACKEND_FRAMEWORKS = ['Express', 'NestJS'];
-const DATABASES = ['MongoDB']; // PostgreSQL soon to be added
+const DATABASES = ['MongoDB', 'postgres'];
+const ORM = ['Mongoose', 'Prisma', 'TypeORM'];
 
 function executeCommand(command) {
 	execSync(command, { stdio: 'inherit' });
@@ -24,7 +25,7 @@ async function createFrontend(frontend) {
 			mkdir -p client &&
 			cd client && 
 			${command} . &&
-			cp ../config/client/* .
+			cp ${process.cwd()}/config/client/* .
 		`;
 	}
 
@@ -38,7 +39,13 @@ async function createFrontend(frontend) {
 		case FRONTEND_FRAMEWORKS[1]:
 			console.log(`[MEXN] Creating Vue app...`);
 
-			executeCommand(constructCommand('npx @vue/cli vue create'));
+			executeCommand(constructCommand('npx @vue/cli create'));
+
+			break;
+		case FRONTEND_FRAMEWORKS[2]:
+			console.log(`[MEXN] Creating Angular app...`);
+
+			executeCommand(constructCommand('npx @angular/cli new client --directory'));
 
 			break;
 		default:
@@ -53,7 +60,7 @@ async function createBackend(backend) {
 			mkdir -p server &&
 			cd server &&
 			${command} . &&
-			cp ../config/server/* .
+			cp ${process.cwd()}/config/server/* .
 		`;
 	}
 
@@ -76,10 +83,25 @@ async function createBackend(backend) {
 	}
 }
 
-async function createDatabase(database) {
+async function createDatabase(database, projectName) {
 	switch (database) {
 		case DATABASES[0]:
 			console.log(`[MEXN] Creating MongoDB database...`);
+
+			executeCommand(`
+				cd db && 
+				docker run -d -p 27017:27017 -v ${process.cwd()}/db/data:/data/db --name ${projectName}-db mongo
+			`);
+
+			break;
+		case DATABASES[1]:
+			console.log(`[MEXN] Creating PostgreSQL database...`);
+
+			executeCommand(`
+				cd db && 
+				docker run -d -p 5432:5432 -v ${process.cwd()}/db/data:/var/lib/postgresql/data --name ${projectName}-db postgres	
+			`);
+
 			break;
 		default:
 			console.log('[MEXN] No database selected.');
@@ -87,6 +109,42 @@ async function createDatabase(database) {
 	}
 }
 
+async function createORM(orm, database) {
+	switch (orm) {
+		case ORM[0]:
+			console.log(`[MEXN] Creating Mongoose ORM...`);
+
+			executeCommand(`
+				cd server &&
+				npm i mongoose
+			`);
+
+			break;
+		case ORM[1]:
+			console.log(`[MEXN] Creating Prisma ORM...`);
+
+			executeCommand(`
+				cd server &&
+				npm i prisma &&
+				npx prisma init &&
+				cp -r ${process.cwd()}/config/server/prisma/${database.toLowerCase()}.prisma ${process.cwd()}/server/prisma/schema.prisma
+			`);
+
+			break;
+		case ORM[2]:
+			console.log(`[MEXN] Creating TypeORM ORM...`);
+
+			executeCommand(`
+					cd server &&
+					npm i typeorm
+				`);
+
+			break;
+		default:
+			console.log('[MEXN] No ORM selected.');
+			break;
+	}
+}
 (async function () {
 	const projectData = await inquirer.prompt([
 		{
@@ -112,6 +170,31 @@ async function createDatabase(database) {
 			message: 'Which database do you want to use?',
 			choices: DATABASES,
 		},
+		{
+			name: 'orm',
+			type: 'list',
+			message: (answers) => {
+				if (answers['backend-framework'] === BACKEND_FRAMEWORKS[1]) {
+					return 'Which ORM do you want to use? (NestJS recommends TypeORM)';
+				}
+
+				if (answers.database === DATABASES[0]) {
+					return 'Which ORM do you want to use? (MongoDB recommends Mongoose)';
+				}
+
+				return 'Which ORM do you want to use?';
+			},
+			choices: (answers) => {
+				switch (answers.database) {
+					case DATABASES[0]:
+						return ORM;
+					case DATABASES[1]:
+						return ORM.slice(1, 3);
+					default:
+						return [];
+				}
+			},
+		},
 	]);
 
 	console.info('\nProject data: \n');
@@ -133,7 +216,8 @@ async function createDatabase(database) {
 		setProjectName(projectData['project-name']);
 		await createFrontend(projectData['frontend-framework']);
 		await createBackend(projectData['backend-framework']);
-		await createDatabase(projectData['database']);
+		await createDatabase(projectData['database'], projectData['project-name']);
+		await createORM(projectData['orm'], projectData['database']);
 
 		console.log('Creating project...');
 	}
