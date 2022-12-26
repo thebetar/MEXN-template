@@ -4,7 +4,7 @@
 	"description": "",
 	"main": "index.js",
 	"scripts": {
-		"init": "node init-cli.js",
+		"init": "node config/init-cli.js",
 		"ci:install": "cd client && npm ci && cd ../server && npm ci",
 		"clean": "sudo rm -rf client/* client/.* server/* server/.* db/data/* db/data/.*"
 	},

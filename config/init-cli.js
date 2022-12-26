@@ -23,9 +23,8 @@ async function createFrontend(frontend) {
 	function constructCommand(command) {
 		return `
 			mkdir -p client &&
-			cd client && 
-			${command} . &&
-			cp ${process.cwd()}/config/client/* .
+			${command} client &&
+			cp ${process.cwd()}/config/client/* client
 		`;
 	}
 
@@ -58,9 +57,8 @@ async function createBackend(backend) {
 	function constructCommand(command) {
 		return `
 			mkdir -p server &&
-			cd server &&
-			${command} . &&
-			cp ${process.cwd()}/config/server/* .
+			${command} server &&
+			cp ${process.cwd()}/config/server/* server
 		`;
 	}
 
@@ -69,6 +67,7 @@ async function createBackend(backend) {
 			console.log(`[MEXN] Creating Express app...`);
 
 			executeCommand(constructCommand('git clone https://github.com/thebetar/Express-template'));
+			executeCommand('rm -rf server/.git');
 
 			break;
 		case BACKEND_FRAMEWORKS[1]:
@@ -123,11 +122,15 @@ async function createORM(orm, database) {
 		case ORM[1]:
 			console.log(`[MEXN] Creating Prisma ORM...`);
 
+			const pathname = `${process.cwd()}/config/prisma/${database.toLowerCase()}.prisma`;
+			console.log(pathname);
+
 			executeCommand(`
 				cd server &&
 				npm i prisma &&
 				npx prisma init &&
-				cp -r ${process.cwd()}/config/server/prisma/${database.toLowerCase()}.prisma ${process.cwd()}/server/prisma/schema.prisma
+				cp -r ${pathname} ${process.cwd()}/server/prisma/schema.prisma &&
+				npm i @prisma/client
 			`);
 
 			break;
