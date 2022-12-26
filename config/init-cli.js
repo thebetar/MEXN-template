@@ -5,9 +5,10 @@ import fs from 'fs';
 console.log("Welcome to the MEXN-template, let's get started! 🏃");
 
 const FRONTEND_FRAMEWORKS = ['React', 'Vue', 'Angular']; // Angular maybe later
+const FRONTEND_COMPONENT_FRAMEWORKS = ['Bootstrap', 'Material UI', 'Tailwind CSS', 'None'];
 const BACKEND_FRAMEWORKS = ['Express', 'NestJS'];
 const DATABASES = ['MongoDB', 'postgres'];
-const ORM = ['Mongoose', 'Prisma', 'TypeORM'];
+const ORM = ['Mongoose', 'Prisma', 'TypeORM', 'None'];
 
 function executeCommand(command) {
 	execSync(command, { stdio: 'inherit' });
@@ -19,7 +20,7 @@ function setProjectName(name) {
 	fs.writeFileSync('.env', `PROJECT_NAME=${name}`, { encoding: 'utf-8' });
 }
 
-async function createFrontend(frontend) {
+async function createFrontend(frontend, componentFramework, tailwind) {
 	function constructCommand(command) {
 		return `
 			mkdir -p client &&
@@ -34,11 +35,43 @@ async function createFrontend(frontend) {
 
 			executeCommand(constructCommand('npx create-react-app'));
 
+			if (componentFramework === FRONTEND_COMPONENT_FRAMEWORKS[0]) {
+				console.log(`[MEXN] Adding Bootstrap...`);
+
+				executeCommand(`
+					cd client &&
+					npm i bootstrap react-bootstrap
+				`);
+			} else if (componentFramework === FRONTEND_COMPONENT_FRAMEWORKS[1]) {
+				console.log(`[MEXN] Adding Material UI...`);
+
+				executeCommand(`
+					cd client &&
+					npm i @mui/material @emotion/react @emotion/styled
+				`);
+			}
+
 			break;
 		case FRONTEND_FRAMEWORKS[1]:
 			console.log(`[MEXN] Creating Vue app...`);
 
 			executeCommand(constructCommand('npx @vue/cli create'));
+
+			if (componentFramework === FRONTEND_COMPONENT_FRAMEWORKS[0]) {
+				console.log(`[MEXN] Adding Bootstrap...`);
+
+				executeCommand(`
+					cd client &&
+					npm i bootstrap-vue bootstrap
+				`);
+			} else if (componentFramework === FRONTEND_COMPONENT_FRAMEWORKS[1]) {
+				console.log(`[MEXN] Adding Material UI...`);
+
+				executeCommand(`
+					cd client &&
+					npx @vue/cli add vuetify
+					`);
+			}
 
 			break;
 		case FRONTEND_FRAMEWORKS[2]:
@@ -50,6 +83,16 @@ async function createFrontend(frontend) {
 		default:
 			console.log('[MEXN] No frontend framework selected.');
 			break;
+	}
+
+	if (componentFramework === FRONTEND_COMPONENT_FRAMEWORKS[2] || tailwind) {
+		console.log(`[MEXN] Adding Tailwind CSS...`);
+
+		executeCommand(`
+			cd client &&
+			npm i tailwindcss postcss autoprefixer postcss-cli &&
+			npx tailwindcss init -p
+		`);
 	}
 }
 
@@ -66,7 +109,7 @@ async function createBackend(backend) {
 		case BACKEND_FRAMEWORKS[0]:
 			console.log(`[MEXN] Creating Express app...`);
 
-			executeCommand(constructCommand('git clone https://github.com/thebetar/Express-template'));
+			executeCommand(constructCommand('git clone https://github.com/thebetar/Express-template --depth 1'));
 			executeCommand('rm -rf server/.git');
 
 			break;
@@ -83,23 +126,34 @@ async function createBackend(backend) {
 }
 
 async function createDatabase(database, projectName) {
+	function constructCommand(command) {
+		return `
+			mkdir -p db &&
+			mkdir -p db/data &&
+			cd db && 
+			${command}
+		`;
+	}
+
 	switch (database) {
 		case DATABASES[0]:
 			console.log(`[MEXN] Creating MongoDB database...`);
 
-			executeCommand(`
-				cd db && 
+			executeCommand(
+				constructCommand(`
 				docker run -d -p 27017:27017 -v ${process.cwd()}/db/data:/data/db --name ${projectName}-db mongo
-			`);
+			`),
+			);
 
 			break;
 		case DATABASES[1]:
 			console.log(`[MEXN] Creating PostgreSQL database...`);
 
-			executeCommand(`
-				cd db && 
+			executeCommand(
+				constructCommand(`
 				docker run -d -p 5432:5432 -v ${process.cwd()}/db/data:/var/lib/postgresql/data --name ${projectName}-db postgres	
-			`);
+			`),
+			);
 
 			break;
 		default:
@@ -148,7 +202,26 @@ async function createORM(orm, database) {
 			break;
 	}
 }
+
 (async function () {
+	if (fs.existsSync('client') || fs.existsSync('server') || fs.existsSync('db')) {
+		console.log('[MEXN] Project already exists.');
+
+		const { overwrite } = await inquirer.prompt([
+			{
+				name: 'overwrite',
+				type: 'confirm',
+				message: 'Do you want to remove and overwrite the existing project?',
+			},
+		]);
+
+		if (overwrite) {
+			executeCommand('sudo rm -rf client server db');
+		} else {
+			return;
+		}
+	}
+
 	const projectData = await inquirer.prompt([
 		{
 			name: 'project-name',
@@ -160,6 +233,19 @@ async function createORM(orm, database) {
 			type: 'list',
 			message: 'Which frontend framework do you want to use?',
 			choices: FRONTEND_FRAMEWORKS,
+		},
+		{
+			name: 'frontend-component-framework',
+			type: 'list',
+			message: 'Which frontend component framework do you want to use?',
+			choices: FRONTEND_COMPONENT_FRAMEWORKS,
+		},
+		{
+			name: 'tailwind-toggle',
+			type: 'list',
+			message: 'Do you want to use Tailwind CSS?',
+			choices: ['Yes', 'No'],
+			when: (answers) => answers['frontend-component-framework'] !== FRONTEND_COMPONENT_FRAMEWORKS[2] && answers['frontend-component-framework'] !== FRONTEND_FRAMEWORKS[3],
 		},
 		{
 			name: 'backend-framework',
@@ -200,12 +286,15 @@ async function createORM(orm, database) {
 		},
 	]);
 
-	console.info('\nProject data: \n');
-	console.info(
-		Object.keys(projectData)
-			.map((key) => `${key}: ${projectData[key]}`)
-			.join('\n'),
-	);
+	const console_object = {};
+
+	for (const key in projectData) {
+		const parsedKey = key.split('-').join(' ');
+		console_object[`${parsedKey.charAt(0).toUpperCase()}${parsedKey.slice(1)}`] = projectData[key];
+	}
+
+	console.info('\nProject data:');
+	console.table(console_object);
 
 	const check = await inquirer.prompt([
 		{
@@ -217,7 +306,7 @@ async function createORM(orm, database) {
 
 	if (check.check) {
 		setProjectName(projectData['project-name']);
-		await createFrontend(projectData['frontend-framework']);
+		await createFrontend(projectData['frontend-framework'], projectData['frontend-component-framework'], projectData['tailwind-toggle']);
 		await createBackend(projectData['backend-framework']);
 		await createDatabase(projectData['database'], projectData['project-name']);
 		await createORM(projectData['orm'], projectData['database']);
